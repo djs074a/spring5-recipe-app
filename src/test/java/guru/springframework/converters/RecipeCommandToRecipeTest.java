@@ -1,6 +1,7 @@
 package guru.springframework.converters;
 
 import guru.springframework.command.CategoryCommand;
+import guru.springframework.command.IngredientCommand;
 import guru.springframework.command.NotesCommand;
 import guru.springframework.command.RecipeCommand;
 import guru.springframework.domain.Difficulty;
@@ -8,6 +9,8 @@ import guru.springframework.domain.Notes;
 import guru.springframework.domain.Recipe;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.persistence.criteria.CriteriaBuilder;
 
 import static org.junit.Assert.*;
 
@@ -75,12 +78,32 @@ public class RecipeCommandToRecipeTest {
         command.getCategories().add(category1);
         command.getCategories().add(category2);
 
-        public static final Long INGRED_ID_1 = 3L;
-        public static final Long INGRED_ID_2 = 4L;
+        IngredientCommand ingredientCommand1 = new IngredientCommand();
+        ingredientCommand1.setId(INGRED_ID_1);
+
+        IngredientCommand ingredientCommand2 = new IngredientCommand();
+        ingredientCommand2.setId(INGRED_ID_2);
+
+        command.getIngredients().add(ingredientCommand1);
+        command.getIngredients().add(ingredientCommand2);
 
         //when
         Recipe recipe = converter.convert(command);
 
         //then
+
+        assertNotNull(recipe);
+        assertEquals(RECIPE_ID, recipe.getId());
+        assertEquals(COOK_TIME, recipe.getCookTime());
+        assertEquals(PREP_TIME, recipe.getPrepTime());
+        assertEquals(DESCRIPTION, recipe.getDescription());
+        assertEquals(DIRECTIONS, recipe.getDirections());
+        assertEquals(DIFFICULTY, recipe.getDifficulty());
+        assertEquals(SERVINGS, recipe.getServings());
+        assertEquals(SOURCE, recipe.getSource());
+        assertEquals(URL, recipe.getUrl());
+        assertEquals(NOTES_ID, recipe.getNotes().getId());
+        assertEquals(2, recipe.getCategories().size());
+        assertEquals(2, recipe.getIngredients().size());
     }
 }
