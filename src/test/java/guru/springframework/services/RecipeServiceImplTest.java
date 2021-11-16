@@ -51,7 +51,7 @@ public class RecipeServiceImplTest {
     }
 
     @Test
-    public void getRecipes() {
+    public void getRecipesTest() {
         Recipe recipe = new Recipe();
         HashSet recipesData = new HashSet();
         recipesData.add(recipe);
@@ -61,5 +61,13 @@ public class RecipeServiceImplTest {
 
         assertEquals(1, recipes.size());
         verify(recipeRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void deleteRecipeTest() {
+        long idToDelete = Long.valueOf(2L);
+        recipeService.deleteById(idToDelete);
+
+        verify(recipeRepository, times(1)).deleteById(anyLong());
     }
 }
