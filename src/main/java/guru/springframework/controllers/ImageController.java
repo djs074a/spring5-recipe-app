@@ -1,11 +1,17 @@
 package guru.springframework.controllers;
 
+import guru.springframework.command.RecipeCommand;
 import guru.springframework.services.ImageService;
 import guru.springframework.services.RecipeService;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 @Controller
 public class ImageController {
@@ -18,18 +24,36 @@ public class ImageController {
         this.recipeService = recipeService;
     }
 
-    @GetMapping("recipe/{recipeId}/image")
-    public String showUploadForm(@PathVariable String recipeId, Model model) {
-        model.addAttribute("recipe", recipeService.findCommandById(Long.valueOf(recipeId)));
+    @GetMapping("recipe/{id}/image")
+    public String showUploadForm(@PathVariable String id, Model model) {
+        model.addAttribute("recipe", recipeService.findCommandById(Long.valueOf(id)));
 
         return "recipe/imageuploadform";
     }
 
-    @PostMapping("recipe/{recipeId}/image")
-    public String handleImagePost(@PathVariable String recipeId, @RequestParam("imagefile") MultipartFile file) {
-        imageService.saveImageFile(Long.valueOf(recipeId),file);
+    @PostMapping("recipe/{id}/image")
+    public String handleImagePost(@PathVariable String id, @RequestParam("imagefile") MultipartFile file) {
+        imageService.saveImageFile(Long.valueOf(id),file);
 
-        return "redirect:/recipe/" + recipeId +"/show";
+        return "redirect:/recipe/" + id +"/show";
+    }
+
+    @GetMapping("/recipe/{id}/recipeimage")
+    public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws Exception {
+        RecipeCommand recipeCommand = recipeService.findCommandById(Long.valueOf(id));
+
+        if (recipeCommand.getImage() != null) {
+            byte[] byteArray = new byte[recipeCommand.getImage().length];
+
+            int i = 0;
+            for (Byte b : recipeCommand.getImage()) {
+                byteArray[i++] = b;
+            }
+
+            response.setContentType("image/jpeg");
+            InputStream is = new ByteArrayInputStream(byteArray);
+            IOUtils.copy(is, response.getOutputStream());
+        }
     }
 
 }
