@@ -38,7 +38,7 @@ public class ImageControllerTest {
     }
 
     @Test
-    public void getFormGet() throws Exception {
+    public void getImageForm() throws Exception {
         //given
         RecipeCommand  command = new RecipeCommand();
         command.setId(1L);
